@@ -3,8 +3,10 @@ import { mongooseAdapter } from '@payloadcms/db-mongodb'
 
 import sharp from 'sharp' // sharp-import
 import path from 'path'
-import { buildConfig, PayloadRequest } from 'payload'
+import { buildConfig, type PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
+import { en } from '@payloadcms/translations/languages/en'
+import { rsLatin } from '@payloadcms/translations/languages/rsLatin'
 
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
@@ -56,6 +58,14 @@ export default buildConfig({
         },
       ],
     },
+  },
+  localization: {
+    defaultLocale: 'en',
+    locales: ['en', 'rs-latin'],
+  },
+  i18n: {
+    fallbackLanguage: 'en',
+    supportedLanguages: { en, 'rs-latin': rsLatin },
   },
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
