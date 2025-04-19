@@ -1,31 +1,31 @@
-version: '3'
-
 services:
   payload:
-    image: node:18-alpine
-    ports:
-      - '3000:3000'
-    volumes:
-      - .:/home/node/app
-      - node_modules:/home/node/app/node_modules
-    working_dir: /home/node/app/
-    command: sh -c "yarn install && yarn dev"
+    image: node:20-alpine
+    container_name: payload
     depends_on:
-      - mongo
-    env_file:
-      - .env
+      - mongodb
+    working_dir: /app
+    volumes:
+      - ./:/app
+    labels:
+      - 'traefik.http.services.${PROJECT_NAME}_node.loadbalancer.server.port=3000'
+      - 'traefik.http.routers.${PROJECT_NAME}_node.rule=Host(`${PROJECT_BASE_URL}`)'
+    command: sh -c "corepack enable && corepack prepare pnpm@9.0.0 --activate && pnpm install && pnpm dev"
 
-  mongo:
-    image: mongo:latest
+  mongodb:
+    image: mongo:7
     ports:
       - '27017:27017'
     command:
       - --storageEngine=wiredTiger
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
     volumes:
-      - data:/data/db
+      - mongo:/data/db
     logging:
       driver: none
 
 volumes:
-  data:
-  node_modules:
+  mongo:
+    name: mongo
