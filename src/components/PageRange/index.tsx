@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 
 const defaultLabels = {
   plural: 'Docs',
@@ -9,6 +9,10 @@ const defaultCollectionLabels = {
   posts: {
     plural: 'Posts',
     singular: 'Post',
+  },
+  documents: {
+    plural: 'Documents',
+    singular: 'Document',
   },
 }
 
