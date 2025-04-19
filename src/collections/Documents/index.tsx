@@ -24,8 +24,8 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from '@/fields/slug'
-import { revalidateDelete, revalidateDocument } from '../hooks/revalidateDocument'
-import { populateAuthors } from '../hooks/populateAuthors'
+import { revalidateDelete, revalidateDocument } from './hooks/revalidateDocument'
+import { populateAuthors } from './hooks/populateAuthors'
 
 export const Documents: CollectionConfig<'documents'> = {
   slug: 'documents',
