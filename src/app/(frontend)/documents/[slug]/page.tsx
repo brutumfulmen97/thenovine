@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 
-// import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
@@ -8,10 +7,9 @@ import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
 import RichText from '@/components/RichText'
 
-// import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
-// import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -49,28 +47,37 @@ export default async function Document({ params: paramsPromise }: Args) {
 
   return (
     <article className="pt-16 pb-16">
-      {/* <PageClient /> */}
-
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 
       {draft && <LivePreviewListener />}
 
-      {/* <PostHero post={post} /> */}
-
       <div className="flex flex-col items-center gap-4 pt-8">
+        <h1 className="text-4xl font-bold">{document.title}</h1>
         <div className="container">
           <RichText
             className="max-w-[48rem] mx-auto"
             data={document.content}
             enableGutter={false}
           />
-          {/* {post.relatedPosts && post.relatedPosts.length > 0 && (
-            <RelatedPosts
-              className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
-              docs={post.relatedPosts.filter((post) => typeof post === 'object')}
-            />
-          )} */}
+          {document.relatedPosts && document.relatedPosts.length > 0 && (
+            <>
+              <h2 className="text-2xl mt-12">Related Posts</h2>
+              <RelatedPosts
+                className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
+                docs={document.relatedPosts.filter((post) => typeof post === 'object')}
+              />
+            </>
+          )}
+          {document.relatedDocuments && document.relatedDocuments.length > 0 && (
+            <>
+              <h2 className="text-2xl mt-12">Related Documents</h2>
+              <RelatedPosts
+                className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
+                docs={document.relatedDocuments.filter((doc) => typeof doc === 'object')}
+              />
+            </>
+          )}
         </div>
       </div>
     </article>

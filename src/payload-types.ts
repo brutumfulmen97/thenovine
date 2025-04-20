@@ -1774,7 +1774,7 @@ export interface BannerBlock {
  * via the `definition` "CodeBlock".
  */
 export interface CodeBlock {
-  language?: ('typescript' | 'javascript' | 'css' | 'php' | 'markup' | 'json' | 'yaml') | null;
+  language?: ('typescript' | 'javascript' | 'html' | 'css' | 'php' | 'bash') | null;
   code: string;
   id?: string | null;
   blockName?: string | null;

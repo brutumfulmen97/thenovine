@@ -133,7 +133,7 @@ html {
 }
 
 .container {
-  @apply mx-auto;
+  @apply mx-auto px-4;
 }
 
 .payload-richtext a {
