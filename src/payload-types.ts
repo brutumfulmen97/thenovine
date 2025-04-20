@@ -796,6 +796,10 @@ export interface Redirect {
       | ({
           relationTo: 'posts';
           value: string | Post;
+        } | null)
+      | ({
+          relationTo: 'documents';
+          value: string | Document;
         } | null);
     url?: string | null;
   };
@@ -829,10 +833,15 @@ export interface Search {
   id: string;
   title?: string | null;
   priority?: number | null;
-  doc: {
-    relationTo: 'posts';
-    value: string | Post;
-  };
+  doc:
+    | {
+        relationTo: 'posts';
+        value: string | Post;
+      }
+    | {
+        relationTo: 'documents';
+        value: string | Document;
+      };
   slug?: string | null;
   meta?: {
     title?: string | null;

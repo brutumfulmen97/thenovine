@@ -129,6 +129,9 @@ importers:
       '@types/react-dom':
         specifier: 19.1.2
         version: 19.1.2(@types/react@19.1.0)
+      '@types/react-syntax-highlighter':
+        specifier: ^15.5.13
+        version: 15.5.13
       copyfiles:
         specifier: ^2.4.1
         version: 2.4.1
@@ -1757,6 +1760,9 @@ packages:
     resolution: {integrity: sha512-XGJkWF41Qq305SKWEILa1O8vzhb3aOo3ogBlSmiqNko/WmRb6QIaweuZCXjKygVDXpzXb5wyxKTSOsmkuqj+Qw==}
     peerDependencies:
       '@types/react': ^19.0.0
+
+  '@types/react-syntax-highlighter@15.5.13':
+    resolution: {integrity: sha512-uLGJ87j6Sz8UaBAooU0T6lWJ0dBmjZgN1PZTrj05TNql2/XpC6+4HhMT5syIdFUUt+FASfCeLLv4kBygNU+8qA==}
 
   '@types/react-transition-group@4.4.12':
     resolution: {integrity: sha512-8TV6R3h2j7a91c+1DXdJi3Syo69zzIZbz7Lg5tORM5LEJG7X/E6a1V3drRyBRZq7/utz7A+c4OgYLiLcYGHG6w==}
@@ -6487,6 +6493,10 @@ snapshots:
   '@types/parse-json@4.0.2': {}
 
   '@types/react-dom@19.1.2(@types/react@19.1.0)':
+    dependencies:
+      '@types/react': 19.1.0
+
+  '@types/react-syntax-highlighter@15.5.13':
     dependencies:
       '@types/react': 19.1.0
 
