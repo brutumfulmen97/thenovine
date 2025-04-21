@@ -8,12 +8,7 @@ export const Logo = (props: Props) => {
   const { className } = props
 
   return (
-    <svg
-      className={cn('w-50', className)}
-      width="370"
-      height="105.51178423148114"
-      viewBox="0 0 370 91.0008395469651"
-    >
+    <svg className={cn('w-40', className)} viewBox="0 0 370 91.0008395469651">
       <g
         id="SvgjsG1012"
         transform="matrix(1.0500104943370636,0,0,1.0500104943370636,-11.500524716853175,-3.500104943370637)"

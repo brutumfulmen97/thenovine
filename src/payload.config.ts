@@ -70,7 +70,7 @@ export default buildConfig({
       },
       {
         label: 'Srpski',
-        code: 'rs-latin',
+        code: 'sr',
       },
     ],
   },
