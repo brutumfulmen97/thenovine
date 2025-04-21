@@ -99,7 +99,7 @@ export const RenderDocs = async ({
       <main className="grow flex flex-col border-1 border-neutral-700 border-l-0">
         <Suspense fallback={<DocSkeleton />}>
           {children}
-          <article className="grow">
+          <article className="grow pb-12">
             <div className="flex flex-col items-center gap-4 pt-8">
               <h1 className="text-3xl font-bold">{currentDoc.title}</h1>
               <div className="container">
@@ -114,6 +114,7 @@ export const RenderDocs = async ({
                     <RelatedPosts
                       className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
                       docs={currentDoc.relatedPosts.filter((post) => typeof post === 'object')}
+                      relationTo="posts"
                     />
                   </>
                 )}
@@ -123,6 +124,7 @@ export const RenderDocs = async ({
                     <RelatedPosts
                       className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
                       docs={currentDoc.relatedDocuments.filter((doc) => typeof doc === 'object')}
+                      relationTo="documents"
                     />
                   </>
                 )}
@@ -132,7 +134,7 @@ export const RenderDocs = async ({
         </Suspense>
         {next && (
           <Link
-            className="p-8 bg-neutral-900 block w-full mt-12 group hover:bg-neutral-800 transition-colors border-t-1 border-neutral-700"
+            className="p-8 bg-neutral-900 block w-full group hover:bg-neutral-800 transition-colors border-t-1 border-neutral-700 text-white"
             data-algolia-no-crawl
             href={`/documents/${next?.topic?.toLowerCase()}/${next.slug}`}
             prefetch={false}

@@ -129,7 +129,7 @@ export const DocsNavigation = ({
         >
           {topics.map((tGroup, groupIndex) => (
             <Fragment key={`group-${groupIndex}`}>
-              <h4 className="font-bold text-lg mt-4">{tGroup.groupLabel}</h4>
+              <h4 className="font-bold text-xl mt-4">{tGroup.groupLabel}</h4>
               {tGroup.topics.map(
                 (topic, index) =>
                   topic && (
@@ -165,7 +165,7 @@ export const DocsNavigation = ({
                                 >
                                   <li
                                     className={cn(
-                                      'text-neutral-400 font-semibold hover:text-primary',
+                                      'text-neutral-400 mb-1 hover:text-primary capitalize',
                                       isActiveDoc(topic.slug.toLowerCase(), doc.slug ?? '')
                                         ? 'text-primary'
                                         : '',

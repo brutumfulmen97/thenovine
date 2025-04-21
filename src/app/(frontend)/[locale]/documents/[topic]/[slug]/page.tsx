@@ -23,7 +23,7 @@ type Args = {
 }
 
 export default async function Page({ params }: Args) {
-  const { topic, slug, locale } = await params
+  const { topic, slug, locale = 'en' } = await params
 
   const payload = await getPayload({ config: configPromise })
 
@@ -115,4 +115,63 @@ const fetchTopicsForSidebar = async ({ payload }: { payload: Payload }) => {
     .filter(Boolean)
 
   return topicGroups
+}
+
+export async function generateMetadata({ params }: Args) {
+  const { topic, slug } = await params
+  const payload = await getPayload({ config: configPromise })
+  const docs = await payload.find({
+    collection: 'documents',
+    depth: 0,
+    pagination: false,
+    select: {
+      description: true,
+      title: true,
+    },
+    where: {
+      slug: {
+        equals: slug,
+      },
+      topic: {
+        equals: topic,
+      },
+    },
+  })
+
+  const currentDoc = docs?.docs?.[0]
+
+  return {
+    description: currentDoc?.title || `The Novine ${topic} Documentation`,
+    title: `${currentDoc?.title ? `${currentDoc.title} | ` : ''}Documentation | The Novine`,
+  }
+}
+
+// We'll prerender only the params from `generateStaticParams` at build time.
+// If a request comes in for a path that hasn't been generated,
+// Next.js will server-render the page on-demand.
+export const dynamicParams = true
+
+export async function generateStaticParams() {
+  const payload = await getPayload({ config: configPromise })
+  const docs = await payload.find({
+    collection: 'documents',
+    depth: 0,
+    limit: 10000,
+    pagination: false,
+    select: {
+      slug: true,
+      topic: true,
+    },
+  })
+
+  const result: { doc: string; topic: string }[] = []
+
+  for (const doc of docs.docs) {
+    result.push({
+      doc: doc.slug ?? '',
+      topic: doc.topic.toLowerCase(),
+    })
+  }
+
+  return result
 }

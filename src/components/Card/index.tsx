@@ -31,7 +31,9 @@ export const Card: FC<{
   const titleToUse = titleFromProps || title
   const sanitizedDescription = description?.replace(/\s/g, ' ') // replace non-breaking space with white space
   const href =
-    relationTo === 'documents' ? `/${relationTo}/${topic}/${slug}` : `/${relationTo}/${slug}`
+    relationTo === 'documents'
+      ? `/${relationTo}/${topic?.toLowerCase()}/${slug}`
+      : `/${relationTo}/${slug}`
 
   return (
     <article

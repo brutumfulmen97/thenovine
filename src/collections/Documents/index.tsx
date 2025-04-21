@@ -9,6 +9,8 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
+import { text } from 'payload/shared'
+
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { Banner } from '../../blocks/Banner/config'
@@ -136,6 +138,14 @@ export const Documents: CollectionConfig<'documents'> = {
             {
               name: 'topic',
               type: 'text',
+              validate: (value: string | null | undefined, args: any) => {
+                if (typeof value === 'string') {
+                  if (/[a-z\s]/.test(value)) {
+                    return 'Topic cannot contain lowercase letters and no spaces'
+                  }
+                }
+                return text(value, args)
+              },
               localized: true,
               admin: {
                 position: 'sidebar',

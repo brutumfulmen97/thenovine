@@ -11,7 +11,7 @@ export const revalidateDocument: CollectionAfterChangeHook<Document> = ({
 }) => {
   if (!context.disableRevalidate) {
     if (doc._status === 'published') {
-      const path = `/documents/${doc.slug}`
+      const path = `/documents/${doc.topic}/${doc.slug}`
 
       payload.logger.info(`Revalidating document at path: ${path}`)
 
@@ -21,7 +21,7 @@ export const revalidateDocument: CollectionAfterChangeHook<Document> = ({
 
     // If the document was previously published, we need to revalidate the old path
     if (previousDoc._status === 'published' && doc._status !== 'published') {
-      const oldPath = `/documents/${previousDoc.slug}`
+      const oldPath = `/documents/${previousDoc.topic}/${previousDoc.slug}`
 
       payload.logger.info(`Revalidating old document at path: ${oldPath}`)
 
@@ -37,7 +37,7 @@ export const revalidateDelete: CollectionAfterDeleteHook<Document> = ({
   req: { context },
 }) => {
   if (!context.disableRevalidate) {
-    const path = `/documents/${doc?.slug}`
+    const path = `/documents/${doc.topic}/${doc.slug}`
 
     revalidatePath(path)
     revalidateTag('document-sitemap')

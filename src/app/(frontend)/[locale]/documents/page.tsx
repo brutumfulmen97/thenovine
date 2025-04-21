@@ -1,13 +1,6 @@
-import type { Metadata } from 'next/types'
-
-import { CollectionArchive } from '@/components/CollectionArchive'
-import { PageRange } from '@/components/PageRange'
-import { Pagination } from '@/components/Pagination'
 import configPromise from '@payload-config'
 import { getPayload, type TypedLocale } from 'payload'
-import React from 'react'
-import { getTranslations } from 'next-intl/server'
-import PageClient from './page.client'
+import { redirect } from '@/i18n/routing'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -20,55 +13,26 @@ type Args = {
 
 export default async function Page({ params }: Args) {
   const { locale } = await params
-  const t = await getTranslations()
 
   const payload = await getPayload({ config: configPromise })
 
   const documents = await payload.find({
     collection: 'documents',
     depth: 1,
-    limit: 12,
+    limit: 1,
     overrideAccess: false,
     locale,
     select: {
-      title: true,
+      topic: true,
       slug: true,
-      categories: true,
-      meta: true,
     },
   })
 
-  return (
-    <div className="pt-24 pb-24">
-      <PageClient />
-      <div className="container mb-16">
-        <div className="prose dark:prose-invert max-w-none">
-          <h1>{t('documents')}</h1>
-        </div>
-      </div>
+  const doc = documents.docs[0]
 
-      <div className="container mb-8">
-        <PageRange
-          collection="documents"
-          currentPage={documents.page}
-          limit={12}
-          totalDocs={documents.totalDocs}
-        />
-      </div>
-
-      <CollectionArchive items={documents.docs} relationTo="documents" />
-
-      <div className="container">
-        {documents.totalPages > 1 && documents.page && (
-          <Pagination page={documents.page} totalPages={documents.totalPages} />
-        )}
-      </div>
-    </div>
-  )
-}
-
-export function generateMetadata(): Metadata {
-  return {
-    title: 'Documents | The Novine',
+  if (!doc) {
+    return redirect({ href: '/', locale })
   }
+
+  return redirect({ href: `/documents/${doc.topic}/${doc.slug}`, locale })
 }
