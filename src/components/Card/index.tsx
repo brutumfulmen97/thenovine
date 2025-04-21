@@ -1,7 +1,7 @@
 'use client'
 import { cn } from '@/utilities/ui'
 import useClickableCard from '@/utilities/useClickableCard'
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 import { Fragment, type FC } from 'react'
 
 import type { Post, Document } from '@/payload-types'
@@ -9,7 +9,7 @@ import type { Post, Document } from '@/payload-types'
 import { Media } from '@/components/Media'
 
 export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
-export type CardDocumentData = Pick<Document, 'slug' | 'categories' | 'meta' | 'title'>
+export type CardDocumentData = Pick<Document, 'slug' | 'topic' | 'meta' | 'title'>
 
 export const Card: FC<{
   alignItems?: 'center'
@@ -22,13 +22,16 @@ export const Card: FC<{
   const { card, link } = useClickableCard({})
   const { className, doc, relationTo, showCategories, title: titleFromProps } = props
 
-  const { slug, categories, meta, title } = doc || {}
+  const { slug, meta, title } = doc || {}
+  const categories = doc && 'categories' in doc ? doc.categories : null
+  const topic = doc && 'topic' in doc ? doc.topic : null
   const { description, image: metaImage } = meta || {}
 
   const hasCategories = categories && Array.isArray(categories) && categories.length > 0
   const titleToUse = titleFromProps || title
   const sanitizedDescription = description?.replace(/\s/g, ' ') // replace non-breaking space with white space
-  const href = `/${relationTo}/${slug}`
+  const href =
+    relationTo === 'documents' ? `/${relationTo}/${topic}/${slug}` : `/${relationTo}/${slug}`
 
   return (
     <article
@@ -45,30 +48,27 @@ export const Card: FC<{
       <div className="p-4">
         {showCategories && hasCategories && (
           <div className="uppercase text-sm mb-4">
-            {showCategories && hasCategories && (
-              <div>
-                {categories?.map((category, index) => {
-                  if (typeof category === 'object') {
-                    const { title: titleFromCategory } = category
+            {categories?.map((category, index) => {
+              if (typeof category === 'object') {
+                const { title: titleFromCategory } = category
 
-                    const categoryTitle = titleFromCategory || 'Untitled category'
+                const categoryTitle = titleFromCategory || 'Untitled category'
 
-                    const isLast = index === categories.length - 1
+                const isLast = index === categories.length - 1
 
-                    return (
-                      <Fragment key={category.id}>
-                        {categoryTitle}
-                        {!isLast && <Fragment>, &nbsp;</Fragment>}
-                      </Fragment>
-                    )
-                  }
+                return (
+                  <Fragment key={category.id}>
+                    {categoryTitle}
+                    {!isLast && <Fragment>, &nbsp;</Fragment>}
+                  </Fragment>
+                )
+              }
 
-                  return null
-                })}
-              </div>
-            )}
+              return null
+            })}
           </div>
         )}
+        {showCategories && topic && <div className="uppercase text-sm mb-4">{topic}</div>}
         {titleToUse && (
           <div className="prose">
             <h3>

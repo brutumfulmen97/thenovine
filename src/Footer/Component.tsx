@@ -1,5 +1,4 @@
 import { getCachedGlobal } from '@/utilities/getGlobals'
-import Link from 'next/link'
 import React from 'react'
 
 import type { Footer as TFooter } from '@/payload-types'
@@ -9,6 +8,7 @@ import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo/Logo'
 import type { TypedLocale } from 'payload'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
+import { Link } from '@/i18n/routing'
 
 export async function Footer({ locale }: { locale: TypedLocale }) {
   const footerData: TFooter = await getCachedGlobal('footer', 1, locale)()

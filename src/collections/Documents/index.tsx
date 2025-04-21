@@ -38,7 +38,7 @@ export const Documents: CollectionConfig<'documents'> = {
   defaultPopulate: {
     title: true,
     slug: true,
-    categories: true,
+    topic: true,
     meta: {
       image: true,
       description: true,
@@ -134,14 +134,24 @@ export const Documents: CollectionConfig<'documents'> = {
               relationTo: 'posts',
             },
             {
-              name: 'categories',
-              type: 'relationship',
-              required: true,
+              name: 'topic',
+              type: 'text',
+              localized: true,
               admin: {
                 position: 'sidebar',
               },
-              hasMany: true,
-              relationTo: 'categories',
+              required: true,
+            },
+            {
+              name: 'topicGroup',
+              type: 'text',
+              localized: true,
+              admin: {
+                description:
+                  'The topic group is displayed on the sidebar, but is not part of the URL',
+                position: 'sidebar',
+              },
+              required: true,
             },
           ],
           label: 'Meta',

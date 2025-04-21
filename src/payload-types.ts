@@ -415,7 +415,11 @@ export interface Document {
   };
   relatedDocuments?: (string | Document)[] | null;
   relatedPosts?: (string | Post)[] | null;
-  categories: (string | Category)[];
+  topic: string;
+  /**
+   * The topic group is displayed on the sidebar, but is not part of the URL
+   */
+  topicGroup: string;
   meta?: {
     title?: string | null;
     /**
@@ -1230,7 +1234,8 @@ export interface DocumentsSelect<T extends boolean = true> {
   content?: T;
   relatedDocuments?: T;
   relatedPosts?: T;
-  categories?: T;
+  topic?: T;
+  topicGroup?: T;
   meta?:
     | T
     | {
