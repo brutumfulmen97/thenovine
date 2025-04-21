@@ -62,7 +62,17 @@ export default buildConfig({
   },
   localization: {
     defaultLocale: 'en',
-    locales: ['en', 'rs-latin'],
+    fallback: true,
+    locales: [
+      {
+        label: 'English',
+        code: 'en',
+      },
+      {
+        label: 'Srpski',
+        code: 'rs-latin',
+      },
+    ],
   },
   i18n: {
     fallbackLanguage: 'en',
