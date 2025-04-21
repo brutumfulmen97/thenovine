@@ -71,7 +71,7 @@ const queryPage = cache(async ({ locale, slug }: { locale: TypedLocale; slug: st
     draft,
     limit: 1,
     overrideAccess: draft,
-    locale: locale,
+    locale,
     where: {
       slug: {
         equals: slug,

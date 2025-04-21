@@ -12,5 +12,9 @@
   "dashboard": "Dashboard",
   "previous": "Prethodna",
   "next": "Sledeća",
-  "more-pages": "Više stranica"
+  "more-pages": "Više stranica",
+  "no-results": "Nema rezultata.",
+  "submit": "Pošalji",
+  "document": "Dokument",
+  "documents": "Dokumenti"
 }

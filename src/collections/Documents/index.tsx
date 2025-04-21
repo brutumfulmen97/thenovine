@@ -69,6 +69,7 @@ export const Documents: CollectionConfig<'documents'> = {
     {
       name: 'title',
       type: 'text',
+      localized: true,
       required: true,
     },
     {
@@ -79,6 +80,7 @@ export const Documents: CollectionConfig<'documents'> = {
             {
               name: 'content',
               type: 'richText',
+              localized: true,
               editor: lexicalEditor({
                 features: ({ rootFeatures }) => {
                   return [
@@ -147,6 +149,7 @@ export const Documents: CollectionConfig<'documents'> = {
         {
           name: 'meta',
           label: 'SEO',
+          localized: true,
           fields: [
             OverviewField({
               titlePath: 'meta.title',

@@ -1,31 +1,41 @@
 import type { Metadata } from 'next/types'
 
-import { CollectionArchive } from '@/components/CollectionArchive'
 import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import { getPayload, type TypedLocale } from 'payload'
 import React from 'react'
 import { Search } from '@/search/Component'
 import PageClient from './page.client'
-import { CardPostData } from '@/components/Card'
+import { Card, type CardDocumentData, type CardPostData } from '@/components/Card'
+import { getTranslations } from 'next-intl/server'
 
 type Args = {
   searchParams: Promise<{
     q: string
   }>
+  params: Promise<{
+    locale: TypedLocale
+  }>
 }
-export default async function Page({ searchParams: searchParamsPromise }: Args) {
+export default async function Page({
+  searchParams: searchParamsPromise,
+  params: paramsPromise,
+}: Args) {
   const { q: query } = await searchParamsPromise
+  const { locale } = await paramsPromise
+  const t = await getTranslations()
   const payload = await getPayload({ config: configPromise })
 
-  const posts = await payload.find({
+  const items = await payload.find({
     collection: 'search',
     depth: 1,
     limit: 12,
+    locale,
     select: {
       title: true,
       slug: true,
       categories: true,
       meta: true,
+      doc: true,
     },
     // pagination: false reduces overhead if you don't need totalDocs
     pagination: false,
@@ -64,7 +74,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
       <PageClient />
       <div className="container mb-16">
         <div className="prose dark:prose-invert max-w-none text-center">
-          <h1 className="mb-8 lg:mb-16">Search</h1>
+          <h1 className="mb-8 lg:mb-16">{t('search')}</h1>
 
           <div className="max-w-[50rem] mx-auto">
             <Search />
@@ -72,10 +82,29 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
         </div>
       </div>
 
-      {posts.totalDocs > 0 ? (
-        <CollectionArchive items={posts.docs as CardPostData[]} relationTo="posts" />
+      {items.totalDocs > 0 ? (
+        <div className="container">
+          <div className="grid grid-cols-4 sm:grid-cols-8 lg:grid-cols-12 gap-y-4 gap-x-4 lg:gap-y-8 lg:gap-x-8 xl:gap-x-8">
+            {items.docs?.map((result) => {
+              if (typeof result === 'object' && result !== null) {
+                return (
+                  <div className="col-span-4" key={result.slug}>
+                    <Card
+                      className="h-full"
+                      doc={result as CardPostData | CardDocumentData}
+                      showCategories
+                      relationTo={result.doc.relationTo}
+                    />
+                  </div>
+                )
+              }
+
+              return null
+            })}
+          </div>
+        </div>
       ) : (
-        <div className="container">No results found.</div>
+        <div className="container">{t('no-results')}</div>
       )}
     </div>
   )
@@ -83,6 +112,6 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
 
 export function generateMetadata(): Metadata {
   return {
-    title: 'The Novine Search',
+    title: 'Search | The Novine',
   }
 }

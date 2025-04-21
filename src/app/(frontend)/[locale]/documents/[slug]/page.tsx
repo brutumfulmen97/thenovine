@@ -10,6 +10,7 @@ import RichText from '@/components/RichText'
 import { generateMeta } from '@/utilities/generateMeta'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
+import PageClient from './page.client'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -47,6 +48,8 @@ export default async function Document({ params: paramsPromise }: Args) {
 
   return (
     <article className="pt-16 pb-16">
+      <PageClient />
+
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 

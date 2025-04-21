@@ -12,5 +12,9 @@
   "dashboard": "Dashboard",
   "previous": "Previous",
   "next": "Next",
-  "more-pages": "More pages"
+  "more-pages": "More pages",
+  "no-results": "No results found.",
+  "submit": "Submit",
+  "document": "Document",
+  "documents": "Documents"
 }

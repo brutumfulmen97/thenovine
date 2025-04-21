@@ -4,14 +4,24 @@ import { CollectionArchive } from '@/components/CollectionArchive'
 import { PageRange } from '@/components/PageRange'
 import { Pagination } from '@/components/Pagination'
 import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import { getPayload, type TypedLocale } from 'payload'
 import React from 'react'
-// import PageClient from './page.client'
+import { getTranslations } from 'next-intl/server'
+import PageClient from './page.client'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
 
-export default async function Page() {
+type Args = {
+  params: Promise<{
+    locale: TypedLocale
+  }>
+}
+
+export default async function Page({ params }: Args) {
+  const { locale } = await params
+  const t = await getTranslations()
+
   const payload = await getPayload({ config: configPromise })
 
   const documents = await payload.find({
@@ -19,6 +29,7 @@ export default async function Page() {
     depth: 1,
     limit: 12,
     overrideAccess: false,
+    locale,
     select: {
       title: true,
       slug: true,
@@ -29,10 +40,10 @@ export default async function Page() {
 
   return (
     <div className="pt-24 pb-24">
-      {/* <PageClient /> */}
+      <PageClient />
       <div className="container mb-16">
         <div className="prose dark:prose-invert max-w-none">
-          <h1>Documents</h1>
+          <h1>{t('documents')}</h1>
         </div>
       </div>
 
@@ -58,6 +69,6 @@ export default async function Page() {
 
 export function generateMetadata(): Metadata {
   return {
-    title: 'The Novine Documents',
+    title: 'Documents | The Novine',
   }
 }
