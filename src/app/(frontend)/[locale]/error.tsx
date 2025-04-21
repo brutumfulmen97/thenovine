@@ -15,8 +15,8 @@ export default function ErrorPage({ error, reset }: TProps) {
   }, [error])
 
   return (
-    <div className="container">
-      <h2>Something went wrong</h2>
+    <div className="container flex flex-col items-center gap-4">
+      <h2 className="text-xl font-bold">Something went wrong</h2>
 
       <Button onClick={() => reset()}>Try again</Button>
     </div>

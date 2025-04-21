@@ -118,12 +118,13 @@ const fetchTopicsForSidebar = async ({ payload }: { payload: Payload }) => {
 }
 
 export async function generateMetadata({ params }: Args) {
-  const { topic, slug } = await params
+  const { topic, slug, locale } = await params
   const payload = await getPayload({ config: configPromise })
   const docs = await payload.find({
     collection: 'documents',
     depth: 0,
     pagination: false,
+    locale,
     select: {
       description: true,
       title: true,
@@ -134,6 +135,9 @@ export async function generateMetadata({ params }: Args) {
       },
       topic: {
         equals: topic,
+      },
+      title: {
+        not_equals: '',
       },
     },
   })
@@ -167,6 +171,8 @@ export async function generateStaticParams() {
   const result: { doc: string; topic: string }[] = []
 
   for (const doc of docs.docs) {
+    if (!doc.slug || !doc.topic || typeof doc.topic !== 'string' || typeof doc.slug !== 'string')
+      continue
     result.push({
       doc: doc.slug ?? '',
       topic: doc.topic.toLowerCase(),

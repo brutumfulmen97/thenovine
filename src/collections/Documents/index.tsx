@@ -53,6 +53,7 @@ export const Documents: CollectionConfig<'documents'> = {
         const path = generatePreviewPath({
           slug: typeof data?.slug === 'string' ? data.slug : '',
           collection: 'documents',
+          topic: typeof data?.topic === 'string' ? data.topic : '',
           req,
         })
 
@@ -71,6 +72,7 @@ export const Documents: CollectionConfig<'documents'> = {
     {
       name: 'title',
       type: 'text',
+      unique: true,
       localized: true,
       required: true,
     },
@@ -139,14 +141,11 @@ export const Documents: CollectionConfig<'documents'> = {
               name: 'topic',
               type: 'text',
               validate: (value: string | null | undefined, args: any) => {
-                if (typeof value === 'string') {
-                  if (/[a-z\s]/.test(value)) {
-                    return 'Topic cannot contain lowercase letters and no spaces'
-                  }
+                if (!/^[a-z]+$/.test(value ?? '')) {
+                  return 'Topic can only contain lowercase letters'
                 }
                 return text(value, args)
               },
-              localized: true,
               admin: {
                 position: 'sidebar',
               },
@@ -155,7 +154,6 @@ export const Documents: CollectionConfig<'documents'> = {
             {
               name: 'topicGroup',
               type: 'text',
-              localized: true,
               admin: {
                 description:
                   'The topic group is displayed on the sidebar, but is not part of the URL',
