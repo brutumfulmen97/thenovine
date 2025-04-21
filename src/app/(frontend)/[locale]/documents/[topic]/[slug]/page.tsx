@@ -42,7 +42,7 @@ export default async function Page({ params }: Args) {
     },
   })
 
-  const topicsForSidebar = await fetchTopicsForSidebar({ payload })
+  const topicsForSidebar = await fetchTopicsForSidebar({ payload, locale })
 
   if (!currentDoc?.docs?.length) {
     return <PayloadRedirects url={`/${locale}/documents/${topic}/${slug}`} />
@@ -63,12 +63,19 @@ export default async function Page({ params }: Args) {
   )
 }
 
-const fetchTopicsForSidebar = async ({ payload }: { payload: Payload }) => {
+const fetchTopicsForSidebar = async ({
+  payload,
+  locale,
+}: {
+  payload: Payload
+  locale: TypedLocale
+}) => {
   const result = await payload.find({
     collection: 'documents',
     depth: 0,
     limit: 10000,
     pagination: false,
+    locale,
     select: {
       slug: true,
       title: true,
@@ -135,9 +142,6 @@ export async function generateMetadata({ params }: Args) {
       },
       topic: {
         equals: topic,
-      },
-      title: {
-        not_equals: '',
       },
     },
   })

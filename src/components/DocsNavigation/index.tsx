@@ -113,90 +113,96 @@ export const DocsNavigation = ({
 
   return (
     <aside className="border-neutral-600 border-1 px-4 relative w-xs">
-      <nav className="" onMouseLeave={() => setResetIndicator(true)}>
-        <Accordion.Root
-          onValueChange={(value) => {
-            // We only want to have one topic open at a time,
-            // so we'll always set the last value in the array
-            const newValue =
-              Array.isArray(value) && value.length > 0 ? [value[value.length - 1]] : value
-            window.localStorage.setItem(openTopicsLocalStorageKey, JSON.stringify(newValue))
-            setOpenTopicPreferences(newValue as string[])
-          }}
-          type="multiple"
-          value={openTopicPreferences}
-          className="mb-4"
-        >
-          {topics.map((tGroup, groupIndex) => (
-            <Fragment key={`group-${groupIndex}`}>
-              <h4 className="font-bold text-xl mt-4">{tGroup.groupLabel}</h4>
-              {tGroup.topics.map(
-                (topic, index) =>
-                  topic && (
-                    <Accordion.Item key={topic.slug} value={topic.slug.toLowerCase()} className="">
-                      <Accordion.Trigger
-                        className={cn(
-                          'text-neutral-400 font-semibold flex items-center gap-2 group my-1 w-full hover:text-primary',
-                          isActiveTopic(topic.slug.toLowerCase()) && 'text-primary',
-                        )}
-                        onClick={() => handleMenuItemClick(topic.slug.toLowerCase())}
-                        onMouseEnter={() => handleIndicator(`${groupIndex}-${index}`)}
-                        ref={(ref) => {
-                          topicRefs.current[`${groupIndex}-${index}`] = ref
-                        }}
+      {openTopicPreferences && (
+        <nav className="" onMouseLeave={() => setResetIndicator(true)}>
+          <Accordion.Root
+            onValueChange={(value) => {
+              // We only want to have one topic open at a time,
+              // so we'll always set the last value in the array
+              const newValue =
+                Array.isArray(value) && value.length > 0 ? [value[value.length - 1]] : value
+              window.localStorage.setItem(openTopicsLocalStorageKey, JSON.stringify(newValue))
+              setOpenTopicPreferences(newValue as string[])
+            }}
+            type="multiple"
+            value={openTopicPreferences}
+            className="mb-4"
+          >
+            {topics.map((tGroup, groupIndex) => (
+              <Fragment key={`group-${groupIndex}`}>
+                <h4 className="font-bold text-xl mt-4">{tGroup.groupLabel}</h4>
+                {tGroup.topics.map(
+                  (topic, index) =>
+                    topic && (
+                      <Accordion.Item
+                        key={topic.slug}
+                        value={topic.slug?.toLowerCase()}
+                        className=""
                       >
-                        {(topic.title || topic.slug)?.replace('-', ' ')}
-                        <ChevronDown
-                          aria-hidden
-                          className="group-hover:-rotate-90 group-hover:block group-aria-expanded:block hidden transition-transform"
-                          size={16}
-                        />
-                      </Accordion.Trigger>
-                      <Accordion.Content asChild>
-                        <ul className="pl-4">
-                          {topic.docs.map((doc, docIndex) => {
-                            const nestedIndex = `${groupIndex}-${index}-${docIndex}`
-                            return (
-                              doc && (
-                                <Link
-                                  href={`/documents/${topic.slug.toLowerCase()}/${doc.slug}`}
-                                  key={`${topic.slug}_${doc.slug}`}
-                                  prefetch={false}
-                                >
-                                  <li
-                                    className={cn(
-                                      'text-neutral-400 mb-1 hover:text-primary capitalize',
-                                      isActiveDoc(topic.slug.toLowerCase(), doc.slug ?? '')
-                                        ? 'text-primary'
-                                        : '',
-                                    )}
-                                    onMouseEnter={() => handleIndicator(nestedIndex)}
-                                    ref={(ref) => {
-                                      topicRefs.current[nestedIndex] = ref
-                                    }}
+                        <Accordion.Trigger
+                          className={cn(
+                            'text-neutral-400 font-semibold flex items-center gap-2 group my-1 w-full hover:text-primary',
+                            isActiveTopic(topic.slug?.toLowerCase()) && 'text-primary',
+                          )}
+                          onClick={() => handleMenuItemClick(topic.slug?.toLowerCase())}
+                          onMouseEnter={() => handleIndicator(`${groupIndex}-${index}`)}
+                          ref={(ref) => {
+                            topicRefs.current[`${groupIndex}-${index}`] = ref
+                          }}
+                        >
+                          {(topic.title || topic.slug)?.replace('-', ' ')}
+                          <ChevronDown
+                            aria-hidden
+                            className="group-hover:-rotate-90 group-hover:block group-aria-expanded:block hidden transition-transform"
+                            size={16}
+                          />
+                        </Accordion.Trigger>
+                        <Accordion.Content asChild>
+                          <ul className="pl-4">
+                            {topic.docs.map((doc, docIndex) => {
+                              const nestedIndex = `${groupIndex}-${index}-${docIndex}`
+                              return (
+                                doc && (
+                                  <Link
+                                    href={`/documents/${topic.slug?.toLowerCase()}/${doc.slug}`}
+                                    key={`${topic.slug}_${doc.slug}`}
+                                    prefetch={false}
                                   >
-                                    {doc.title}
-                                  </li>
-                                </Link>
+                                    <li
+                                      className={cn(
+                                        'text-neutral-400 mb-1 hover:text-primary capitalize',
+                                        isActiveDoc(topic.slug?.toLowerCase(), doc.slug ?? '')
+                                          ? 'text-primary'
+                                          : '',
+                                      )}
+                                      onMouseEnter={() => handleIndicator(nestedIndex)}
+                                      ref={(ref) => {
+                                        topicRefs.current[nestedIndex] = ref
+                                      }}
+                                    >
+                                      {doc.title}
+                                    </li>
+                                  </Link>
+                                )
                               )
-                            )
-                          })}
-                        </ul>
-                      </Accordion.Content>
-                    </Accordion.Item>
-                  ),
-              )}
-              {groupIndex < topics.length - 1 && <div className="" />}
-            </Fragment>
-          ))}
-        </Accordion.Root>
-        {indicatorTop || defaultIndicatorPosition ? (
-          <div
-            className="absolute left-0 top-0 transition-all h-6 bg-white w-[2px]"
-            style={{ top: indicatorTop || defaultIndicatorPosition }}
-          />
-        ) : null}
-      </nav>
+                            })}
+                          </ul>
+                        </Accordion.Content>
+                      </Accordion.Item>
+                    ),
+                )}
+                {groupIndex < topics.length - 1 && <div className="" />}
+              </Fragment>
+            ))}
+          </Accordion.Root>
+          {indicatorTop || defaultIndicatorPosition ? (
+            <div
+              className="absolute left-0 top-0 transition-all h-6 bg-white w-[2px]"
+              style={{ top: indicatorTop || defaultIndicatorPosition }}
+            />
+          ) : null}
+        </nav>
+      )}
     </aside>
   )
 }

@@ -39,21 +39,21 @@ export const Pages: CollectionConfig<'pages'> = {
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt'],
     livePreview: {
-      url: ({ data, req }) => {
+      url: ({ data, locale }) => {
         const path = generatePreviewPath({
           slug: typeof data?.slug === 'string' ? data.slug : '',
           collection: 'pages',
-          req,
+          locale: locale.code,
         })
 
         return path
       },
     },
-    preview: (data, { req }) =>
+    preview: (data, { locale }) =>
       generatePreviewPath({
         slug: typeof data?.slug === 'string' ? data.slug : '',
         collection: 'pages',
-        req,
+        locale,
       }),
     useAsTitle: 'title',
   },

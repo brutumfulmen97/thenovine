@@ -132,7 +132,7 @@ export const RenderDocs = async ({
             </div>
           </article>
         </Suspense>
-        {next && (
+        {next?.slug && (
           <Link
             className="p-8 bg-neutral-900 block w-full group hover:bg-neutral-800 transition-colors border-t-1 border-neutral-700 text-white"
             data-algolia-no-crawl
