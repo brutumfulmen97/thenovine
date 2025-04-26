@@ -7,6 +7,8 @@ declare global {
       VERCEL_PROJECT_PRODUCTION_URL: string
       CRON_SECRET: string
       PREVIEW_SECRET: string
+      NEXT_PUBLIC_VAPID_PUBLIC_KEY: string
+      VAPID_PRIVATE_KEY: string
     }
   }
 }

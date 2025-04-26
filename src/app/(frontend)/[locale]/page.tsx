@@ -1,14 +1,14 @@
 import { generateMeta } from '@/utilities/generateMeta'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
-import { getPayload, type RequiredDataFromCollectionSlug, type TypedLocale } from 'payload'
+import { getPayload, type TypedLocale } from 'payload'
 import { cache } from 'react'
-import { homeStatic } from '@/endpoints/seed/home-static'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import PageClient from './[slug]/page.client'
 import { RenderHero } from '@/heros/RenderHero'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import type { Metadata } from 'next'
+import { InstallPrompt, PushNotificationManager } from '@/components/pwa/PWA'
 
 type Args = {
   params: Promise<{
@@ -22,17 +22,10 @@ export default async function Page({ params }: Args) {
 
   const url = `/${locale}/${slug}`
 
-  let page: RequiredDataFromCollectionSlug<'pages'> | null
-
-  page = await queryPage({
+  const page = await queryPage({
     locale,
     slug,
   })
-
-  // Remove this code once your website is seeded
-  if (!page && slug === 'home') {
-    page = homeStatic
-  }
 
   if (!page) {
     return <PayloadRedirects url={url} />
@@ -46,6 +39,10 @@ export default async function Page({ params }: Args) {
       <PayloadRedirects disableNotFound url={url} />
 
       <RenderHero {...hero} />
+      <div className="container py-4">
+        <PushNotificationManager />
+        <InstallPrompt />
+      </div>
       <RenderBlocks blocks={layout} locale={locale} />
     </article>
   )
