@@ -1,16 +1,16 @@
 services:
-  payload:
-    image: node:20-alpine
-    container_name: payload
-    depends_on:
-      - mongodb
-    working_dir: /app
-    volumes:
-      - ./:/app
-    labels:
-      - 'traefik.http.services.${PROJECT_NAME}_node.loadbalancer.server.port=3000'
-      - 'traefik.http.routers.${PROJECT_NAME}_node.rule=Host(`${PROJECT_BASE_URL}`)'
-    command: sh -c "corepack enable && corepack prepare pnpm@9.0.0 --activate && pnpm install && pnpm dev"
+  # payload:
+  #   image: node:20-alpine
+  #   container_name: payload
+  #   depends_on:
+  #     - mongodb
+  #   working_dir: /app
+  #   volumes:
+  #     - ./:/app
+  #   labels:
+  #     - 'traefik.http.services.${PROJECT_NAME}_node.loadbalancer.server.port=3000'
+  #     - 'traefik.http.routers.${PROJECT_NAME}_node.rule=Host(`${PROJECT_BASE_URL}`)'
+  #   command: sh -c "corepack enable && corepack prepare pnpm@9.0.0 --activate && pnpm install && pnpm dev"
 
   mongodb:
     image: mongo:7

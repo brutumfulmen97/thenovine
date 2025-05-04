@@ -8,7 +8,7 @@ import PageClient from './[slug]/page.client'
 import { RenderHero } from '@/heros/RenderHero'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import type { Metadata } from 'next'
-import { InstallPrompt, PushNotificationManager } from '@/components/pwa/PWA'
+import SendNotification from '@/components/pwa/PWA'
 
 type Args = {
   params: Promise<{
@@ -40,8 +40,7 @@ export default async function Page({ params }: Args) {
 
       <RenderHero {...hero} />
       <div className="container py-4">
-        <PushNotificationManager />
-        <InstallPrompt />
+        <SendNotification />
       </div>
       <RenderBlocks blocks={layout} locale={locale} />
     </article>

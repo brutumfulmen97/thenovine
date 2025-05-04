@@ -1,15 +1,13 @@
 'use client'
-
-import { useState, useEffect } from 'react'
-import { subscribeUser, unsubscribeUser, sendNotification } from '@/actions/notifications'
+import type { MouseEventHandler } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '../ui/button'
-import { Input } from '../ui/input'
 
-function urlBase64ToUint8Array(base64String: string) {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
+const base64ToUint8Array = (base64: string) => {
+  const padding = '='.repeat((4 - (base64.length % 4)) % 4)
+  const b64 = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/')
 
-  const rawData = window.atob(base64)
+  const rawData = window.atob(b64)
   const outputArray = new Uint8Array(rawData.length)
 
   for (let i = 0; i < rawData.length; ++i) {
@@ -18,123 +16,117 @@ function urlBase64ToUint8Array(base64String: string) {
   return outputArray
 }
 
-export function PushNotificationManager() {
-  const [isSupported, setIsSupported] = useState(false)
+export default function SendNotification() {
+  const [isSubscribed, setIsSubscribed] = useState(false)
   const [subscription, setSubscription] = useState<PushSubscription | null>(null)
-  const [message, setMessage] = useState('')
+  const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null)
 
   useEffect(() => {
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-      setIsSupported(true)
-      registerServiceWorker()
+    if (
+      typeof window !== 'undefined' &&
+      'serviceWorker' in navigator &&
+      window.serwist !== undefined
+    ) {
+      // run only in browser
+      navigator.serviceWorker.ready.then((reg) => {
+        reg.pushManager.getSubscription().then((sub) => {
+          if (sub && !(sub.expirationTime && Date.now() > sub.expirationTime - 5 * 60 * 1000)) {
+            setSubscription(sub)
+            setIsSubscribed(true)
+          }
+        })
+        setRegistration(reg)
+      })
     }
   }, [])
 
-  async function registerServiceWorker() {
-    const registration = await navigator.serviceWorker.register('/sw.js', {
-      scope: '/',
-      updateViaCache: 'none',
-    })
-    const sub = await registration.pushManager.getSubscription()
-    setSubscription(sub)
-  }
-
-  async function subscribeToPush() {
-    const registration = await navigator.serviceWorker.ready
+  const subscribeButtonOnClick: MouseEventHandler<HTMLButtonElement> = async (event) => {
+    if (!process.env.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY) {
+      throw new Error('Environment variables supplied not sufficient.')
+    }
+    if (!registration) {
+      console.error('No SW registration available.')
+      return
+    }
+    event.preventDefault()
     const sub = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
+      applicationServerKey: base64ToUint8Array(process.env.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY),
     })
+    // TODO: you should call your API to save subscription data on the server in order to send web push notification from the server
     setSubscription(sub)
-    const serializedSub = JSON.parse(JSON.stringify(sub))
-    await subscribeUser(serializedSub)
+    setIsSubscribed(true)
+    alert('Web push subscribed!')
+    console.log(sub)
   }
 
-  async function unsubscribeFromPush() {
-    await subscription?.unsubscribe()
+  const unsubscribeButtonOnClick: MouseEventHandler<HTMLButtonElement> = async (event) => {
+    if (!subscription) {
+      console.error('Web push not subscribed')
+      return
+    }
+    event.preventDefault()
+    await subscription.unsubscribe()
+    // TODO: you should call your API to delete or invalidate subscription data on the server
     setSubscription(null)
-    await unsubscribeUser()
+    setIsSubscribed(false)
+    console.log('Web push unsubscribed!')
   }
 
-  async function sendTestNotification() {
-    if (subscription) {
-      await sendNotification(message)
-      setMessage('')
+  const sendNotificationButtonOnClick: MouseEventHandler<HTMLButtonElement> = async (event) => {
+    event.preventDefault()
+
+    if (!subscription) {
+      alert('Web push not subscribed')
+      return
+    }
+
+    try {
+      await fetch('/notification', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          subscription,
+        }),
+        signal: AbortSignal.timeout(10000),
+      })
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.name === 'TimeoutError') {
+          console.error('Timeout: It took too long to get the result.')
+        } else if (err.name === 'AbortError') {
+          console.error('Fetch aborted by user action (browser stop button, closing tab, etc.)')
+        } else if (err.name === 'TypeError') {
+          console.error('The AbortSignal.timeout() method is not supported.')
+        } else {
+          // A network error, or some other problem.
+          console.error(`Error: type: ${err.name}, message: ${err.message}`)
+        }
+      } else {
+        console.error(err)
+      }
+      alert('An error happened.')
     }
   }
 
-  if (!isSupported) {
-    return <p>Push notifications are not supported in this browser.</p>
-  }
-
   return (
-    <div>
-      <h3 className="mb-2 text-xl font-bold">Push Notifications</h3>
-      {subscription ? (
-        <>
-          <p>You are subscribed to push notifications.</p>
-          <Button className="mt-2" variant="outline" onClick={unsubscribeFromPush}>
-            Unsubscribe
-          </Button>
-          <div className="my-6 flex gap-2 max-w-xs items-center">
-            <Input
-              type="text"
-              placeholder="Enter notification message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-            <Button variant="secondary" onClick={sendTestNotification}>
-              Send Test
-            </Button>
-          </div>
-        </>
-      ) : (
-        <>
-          <p>You are not subscribed to push notifications.</p>
-          <Button variant="outline" className="my-4" onClick={subscribeToPush}>
-            Subscribe
-          </Button>
-        </>
-      )}
-    </div>
-  )
-}
-
-export function InstallPrompt() {
-  const [isIOS, setIsIOS] = useState(false)
-  const [isStandalone, setIsStandalone] = useState(false)
-
-  useEffect(() => {
-    setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream)
-
-    setIsStandalone(window.matchMedia('(display-mode: standalone)').matches)
-  }, [])
-
-  if (isStandalone) {
-    return null // Don't show install button if already installed
-  }
-
-  return (
-    <div>
-      <h3 className="my-3 text-xl font-bold">Install App</h3>
-      <Button variant="ghost" className="my-4">
-        Add to Home Screen
+    <div className="flex flex-col gap-2 my-4">
+      <Button
+        variant="ghost"
+        type="button"
+        onClick={subscribeButtonOnClick}
+        disabled={isSubscribed}
+      >
+        Subscribe
       </Button>
-      {isIOS && (
-        <p>
-          To install this app on your iOS device, tap the share button
-          <span role="img" aria-label="share icon">
-            {' '}
-            ⎋{' '}
-          </span>
-          and then &quot;Add to Home Screen&quot;
-          <span role="img" aria-label="plus icon">
-            {' '}
-            ➕{' '}
-          </span>
-          .
-        </p>
-      )}
+      <Button type="button" onClick={unsubscribeButtonOnClick} disabled={!isSubscribed}>
+        Unsubscribe
+      </Button>
+      <Button type="button" onClick={sendNotificationButtonOnClick} disabled={!isSubscribed}>
+        Send Notification
+      </Button>
     </div>
   )
 }

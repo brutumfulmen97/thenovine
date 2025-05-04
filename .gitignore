@@ -12,3 +12,8 @@ public/media/
 
 public/robots.txt
 public/sitemap*.xml
+
+certificates
+
+public/sw*
+public/swe-worker*

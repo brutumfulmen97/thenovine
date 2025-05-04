@@ -1,18 +1,26 @@
 import { withPayload } from '@payloadcms/next/withPayload'
 import createNextIntlPlugin from 'next-intl/plugin'
+import withSerwistInit from '@serwist/next'
 
 import redirects from './redirects.js'
 
-const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : undefined || process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+const revision = crypto.randomUUID()
+
+const withSerwist = withSerwistInit({
+  cacheOnNavigation: true,
+  swSrc: 'src/sw.ts',
+  swDest: 'public/sw.js',
+  additionalPrecacheEntries: [{ url: '~/offline', revision }],
+})
+
+const withNextIntl = createNextIntlPlugin()
+
+const NEXT_PUBLIC_SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
   images: {
-    loader: 'custom',
-    loaderFile: './src/utilities/image.ts',
     remotePatterns: [
       ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
         const url = new URL(item)
@@ -66,5 +74,4 @@ const nextConfig = {
   },
 }
 
-const withNextIntl = createNextIntlPlugin()
-export default withNextIntl(withPayload(nextConfig, { devBundleServerPackages: false }))
+export default withNextIntl(withPayload((nextConfig, { devBundleServerPackages: false })))
