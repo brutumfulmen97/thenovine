@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source('../../../src/**/*.{js,ts,jsx,tsx}');
 @import 'tw-animate-css';
 @plugin "@tailwindcss/typography";
 @source inline('lg:col-span-{4,6,8,12}');

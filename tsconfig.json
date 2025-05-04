@@ -4,14 +4,17 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
-    
     "baseUrl": ".",
     "esModuleInterop": true,
     "target": "ES2022",
+    "types": [
+      "@serwist/next/typings"
+    ],
     "lib": [
       "DOM",
       "DOM.Iterable",
-      "ES2022"
+      "ES2022",
+      "webworker"
     ],
     "allowJs": true,
     "skipLibCheck": true,

@@ -74,4 +74,6 @@ const nextConfig = {
   },
 }
 
-export default withNextIntl(withPayload((nextConfig, { devBundleServerPackages: false })))
+export default withNextIntl(
+  withPayload(withSerwist(nextConfig, { devBundleServerPackages: false })),
+)
